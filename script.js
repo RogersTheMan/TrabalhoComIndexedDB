@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         request.onsuccess = () => {
             fetchTasks();
             taskInput.value = '';
+            taskInput.classList.remove('is-invalid');
         };
     };
 
@@ -53,8 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const transaction = db.transaction(['tasks'], 'readwrite');
         const objectStore = transaction.objectStore('tasks');
         const request = objectStore.get(taskId);
-        request.onsuccess = () => {
-            const task = request.result;
+        request.onsuccess = (event) => {
+            const task = event.target.result;
             task.taskName = newTaskName;
             const updateRequest = objectStore.put(task);
             updateRequest.onsuccess = () => {
@@ -73,10 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const cursor = event.target.result;
             if (cursor) {
                 const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
                 li.innerHTML = `
                     <span>${cursor.value.taskName}</span>
-                    <button class="edit-btn" data-task-id="${cursor.value.id}">Editar</button>
-                    <button class="delete-btn" data-task-id="${cursor.value.id}">Excluir</button>
+                    <div>
+                        <button class="btn btn-warning btn-dark edit-btn" data-task-id="${cursor.value.id}">Editar</button>
+                        <button class="btn btn-danger btn-dark delete-btn" data-task-id="${cursor.value.id}">Excluir</button>
+                    </div>
                 `;
                 taskList.appendChild(li);
 
@@ -88,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.querySelector('.edit-btn').addEventListener('click', (event) => {
                     const taskId = Number(event.target.getAttribute('data-task-id'));
                     const newTaskName = prompt('Digite o novo nome da tarefa:');
-                    if (newTaskName !== null) {
+                    if (newTaskName !== null && newTaskName !== '') {
                         editTask(taskId, newTaskName);
                     }
                 });
@@ -103,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskName = taskInput.value.trim();
         if (taskName !== '') {
             addTask(taskName);
+        } else {
+            taskInput.classList.add('is-invalid');
         }
     });
 
