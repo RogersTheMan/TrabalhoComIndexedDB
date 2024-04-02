@@ -1,4 +1,4 @@
-// Grupo: Antonio, Rodrigo, Elias
+// Grupo: Antonio, Rodrigo, Elias, Yasmin
 
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('task-form');
